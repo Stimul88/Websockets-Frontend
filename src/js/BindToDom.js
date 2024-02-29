@@ -18,21 +18,11 @@ export default class BindToDom{
            <div class="user-name hidden"></div>
             <div class="name-container">
              <ol class="name-list">
-<!--                <li class="name-and-avatar">-->
-<!--                          <div class="avatar"></div>-->
-<!--                          <span class="name-text">Женя</span>-->
-<!--                      </li>-->
               </ol>
             </div>
             <form class="chat-window">
               <div class="chat-area">
                 <div class="chat-messages">
-<!--                  <div class="message-container">-->
-<!--                    <div class="name-and-text">-->
-<!--                      <div class="name-and-data name-and-text-red">You, data</div>-->
-<!--                      <span class="message-text">Text</span>-->
-<!--                    </div>-->
-<!--                  </div>-->
                 </div>
              </div>
               <div class="user-input">
@@ -43,22 +33,8 @@ export default class BindToDom{
         `;
   }
 
-  static get submitSelector() {
-    return '.submit';
-  }
-
-  static get inputSelector() {
-    return '.form-control';
-  }
-  //
-  static get selector() {
-    return '.innogrn-form-widget';
-  }
-
   bindToDOM() {
     this.parentEl.innerHTML = BindToDom.markup
-    // this.element = this.parentEl.querySelector(BindToDom.selector);
-    // this.submit = this.element.querySelector(BindToDom.submitSelector);
   }
 }
 

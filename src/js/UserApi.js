@@ -1,35 +1,15 @@
 import {URL} from "./app";
-import SendChat from "./SendChat";
-
-const sendChat = new SendChat()
-
-const ws = new WebSocket(`ws://localhost:8080/ws`);
-
-const nikName = undefined;
 
 
 export default class UserApi {
   constructor(apiUrl) {
     this.apiUrl = apiUrl;
-    // this.nikName = undefined;
-  }
-
-  init () {
-
-    const container = document.querySelector('.container');
-    container.addEventListener('submit', this.sendMessage)
-
-    // const container = document.querySelector('.container');
-    //
-    // window.addEventListener("beforeunload", this.UnloadListener);
-
   }
 
   async get (name) {
     const containerChat = document.querySelector('.container-chat');
     const formName = document.querySelector('.form-name');
     const nameList = containerChat.querySelector('.name-list');
-
 
     const request = await fetch(URL);
     const result = await request;
@@ -89,7 +69,7 @@ export default class UserApi {
 
     const status = json.status;
 
-    // console.log(status);
+    console.log(status);
   }
 
   async delete () {
@@ -118,33 +98,7 @@ export default class UserApi {
       console.log(status);
 
     })
-
-
-
-    // const query = '/?user=' + user.name;
-    //
-    // const requests = await fetch(this.apiUrl + query, {
-    //   method: 'DELETE',
-    //   headers: {
-    //     'Content-Type':'application/json'
-    //   },
-    // });
-    //
-    // const result = await requests;
-    //
-    // if (!result.ok) {
-    //   console.error('Ошибка')
-    //
-    //   return;
-    // }
-    //
-    // const json = await result.json();
-    //
-    // const status = json.status;
-    //
-    // console.log(status);
   }
-
 }
 
 
