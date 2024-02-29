@@ -6,7 +6,8 @@ const sendChat = new SendChat()
 
 const container = document.querySelector('.container');
 const form = new BindToDom(container);
-export const URL = 'http://localhost:8080'
+// export const URL = 'http://localhost:8080'
+export const URL = 'https://websockets-backend.onrender.com'
 
 
 document.addEventListener("DOMContentLoaded", (e) => {

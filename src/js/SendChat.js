@@ -1,4 +1,5 @@
-const ws = new WebSocket(`ws://localhost:8080/ws`);
+// const ws = new WebSocket(`ws://localhost:8080/ws`);
+const ws = new WebSocket(`ws://websockets-backend.onrender.com/ws`);
 
 
 export default class SendChat {
