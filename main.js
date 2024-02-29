@@ -79,7 +79,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": function() { return /* binding */ SendChat; }
 /* harmony export */ });
 // const ws = new WebSocket(`ws://localhost:8080/ws`);
-const ws = new WebSocket(`ws://websockets-backend.onrender.com/ws`);
+const ws = new WebSocket(`wss://websockets-backend.onrender.com/ws`);
 
 
 class SendChat {
@@ -94,6 +94,7 @@ class SendChat {
 
   sendMessage (e) {
     e.preventDefault()
+    console.log(e)
     const container = document.querySelector('.container');
     const chatWindow = document.querySelector('.chat-window')
     const userName = container.querySelector('.user-name')
