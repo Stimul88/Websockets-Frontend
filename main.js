@@ -78,7 +78,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": function() { return /* binding */ SendChat; }
 /* harmony export */ });
-const ws = new WebSocket(`ws://localhost:8080/ws`);
+// const ws = new WebSocket(`ws://localhost:8080/ws`);
+const ws = new WebSocket(`ws://websockets-backend.onrender.com/ws`);
 
 
 class SendChat {
@@ -296,7 +297,8 @@ const sendChat = new _SendChat__WEBPACK_IMPORTED_MODULE_2__["default"]()
 
 const container = document.querySelector('.container');
 const form = new _BindToDom__WEBPACK_IMPORTED_MODULE_0__["default"](container);
-const URL = 'http://localhost:8080'
+// export const URL = 'http://localhost:8080'
+const URL = 'https://websockets-backend.onrender.com'
 
 
 document.addEventListener("DOMContentLoaded", (e) => {
