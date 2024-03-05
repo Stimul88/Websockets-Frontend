@@ -82,6 +82,7 @@ body {
 .chat-area {
     height: 600px;
     overflow-y: scroll;
+
     padding: 20px;
 }
 

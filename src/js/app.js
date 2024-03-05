@@ -1,20 +1,18 @@
 import BindToDom from "./BindToDom"
-import UserApi from "./UserApi"
-import SendChat from "./SendChat";
+import Websocket from "./Websocket";
 
-const sendChat = new SendChat()
+const websocket = new Websocket()
 
 const container = document.querySelector('.container');
 const form = new BindToDom(container);
-// export const URL = 'http://localhost:8080'
-export const URL = 'https://websockets-backend.onrender.com'
+export const URL = 'http://localhost:7070'
+// export const URL = 'https://websockets-backend.onrender.com'
 
 
 document.addEventListener("DOMContentLoaded", (e) => {
   e.preventDefault()
   form.bindToDOM();
 })
-
 
 
 container.addEventListener('click', (e) => {
@@ -27,11 +25,8 @@ container.addEventListener('click', (e) => {
   if(!btn || nameInput.value.trim() === "") return;
   userName.textContent = nameInput.value;
 
-  urlConfig.get(nameInput.value);
+  websocket.userGet(nameInput.value);
 })
 
-sendChat.init()
-
-window.api = new UserApi(URL);
-const urlConfig = window.api;
+websocket.init()
 

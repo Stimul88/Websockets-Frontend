@@ -5,7 +5,7 @@ export default class BindToDom{
 
   static get markup () {
     return `
-          <form class="form-name" name="form">
+          <form class="form-name " name="form">
             <div class="form-container">
               <label for="name-input" class="name-label">Выберите псевдоним</label>
               <input  class="name-input" id="name-input" name="name-input"  minlength="4" maxlength="30" size="10"/>
