@@ -85,6 +85,7 @@ body {
 .chat-area {
     height: 600px;
     overflow-y: scroll;
+
     padding: 20px;
 }
 
@@ -197,5 +198,6 @@ body {
 .hidden {
     display: none;
 }
+
 
 /*# sourceMappingURL=main.css.map*/

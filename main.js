@@ -31,7 +31,7 @@ class BindToDom{
 
   static get markup () {
     return `
-          <form class="form-name" name="form">
+          <form class="form-name " name="form">
             <div class="form-container">
               <label for="name-input" class="name-label">Выберите псевдоним</label>
               <input  class="name-input" id="name-input" name="name-input"  minlength="4" maxlength="30" size="10"/>
@@ -68,33 +68,40 @@ class BindToDom{
 
 /***/ }),
 
-/***/ "./src/js/SendChat.js":
-/*!****************************!*\
-  !*** ./src/js/SendChat.js ***!
-  \****************************/
+/***/ "./src/js/Websocket.js":
+/*!*****************************!*\
+  !*** ./src/js/Websocket.js ***!
+  \*****************************/
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": function() { return /* binding */ SendChat; }
+/* harmony export */   "default": function() { return /* binding */ Websocket; }
 /* harmony export */ });
-// const ws = new WebSocket(`ws://localhost:8080/ws`);
+// const ws = new WebSocket(`ws://localhost:7070/ws`);
 const ws = new WebSocket(`wss://websockets-backend.onrender.com/ws`);
 
 
-class SendChat {
+class Websocket {
   constructor() {
     this.container = document.querySelector('.container');
   }
 
-  init () {
-    this.container.addEventListener('submit', this.sendMessage)
+  init() {
+    ws.addEventListener('open', this.wsOpen)
+    this.container.addEventListener('submit', this.getMessage)
     ws.addEventListener('message', this.wsMessage)
+    ws.addEventListener('close', this.wsClose)
+    ws.addEventListener('error', this.wsError)
   }
 
-  sendMessage (e) {
+  userGet (name) {
+    const userObj = `{"user":{"name": "${name}"}}`
+    ws.send(userObj);
+  }
+
+  getMessage (e) {
     e.preventDefault()
-    console.log(e)
     const container = document.querySelector('.container');
     const chatWindow = document.querySelector('.chat-window')
     const userName = container.querySelector('.user-name')
@@ -103,176 +110,168 @@ class SendChat {
 
     if(!message) return;
 
-    const obj = userName.textContent + ' ' + message
+    const chat = `{
+    "chat":{
+    "name": "${userName.textContent}",
+    "message": "${message}",
+    "time": "${new Date().toLocaleString()}"
+    }}`
 
-    ws.send(obj);
+    ws.send(chat);
 
     text.value = '';
   }
 
-  wsMessage (e) {
+  wsOpen() {
+
+    console.log('ws open')
+  }
+
+  wsMessage(e) {
+
     const container = document.querySelector('.container');
     const chatMessages = container.querySelector('.chat-messages')
     const userName = container.querySelector('.user-name')
-
-    const data = JSON.parse(e.data);
-
-    console.log(data)
-
-    const { chat: messages } = data;
-
-    messages.forEach(message => {
-      if(message.name === userName.textContent) {
-        console.log(message.name)
-
-        const newMessage = `
-                  <div class="message-container message-container-you ">
-                    <div class="name-and-text">
-                      <div class="name-and-data name-and-data-red"> You, ${new Date().toLocaleString()}</div>
-                      <span class="message-text">${message.message}</span>
-                    </div>
-                  </div>
-    `
-        chatMessages.insertAdjacentHTML('afterbegin', newMessage)
-        return;
-      }
-
-      const newMessage = `
-                  <div class="message-container">
-                    <div class="name-and-text">
-                      <div class="name-and-data"> ${message.name}, ${new Date().toLocaleString()}</div>
-                      <span class="message-text">${message.message}</span>
-                    </div>
-                  </div>
-    `
-      chatMessages.insertAdjacentHTML('afterbegin', newMessage)
-    });
-    console.log('ws message')
-  }
-}
-
-
-/***/ }),
-
-/***/ "./src/js/UserApi.js":
-/*!***************************!*\
-  !*** ./src/js/UserApi.js ***!
-  \***************************/
-/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": function() { return /* binding */ UserApi; }
-/* harmony export */ });
-/* harmony import */ var _app__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./app */ "./src/js/app.js");
-
-
-
-class UserApi {
-  constructor(apiUrl) {
-    this.apiUrl = apiUrl;
-  }
-
-  async get (name) {
     const containerChat = document.querySelector('.container-chat');
     const formName = document.querySelector('.form-name');
     const nameList = containerChat.querySelector('.name-list');
 
-    const request = await fetch(_app__WEBPACK_IMPORTED_MODULE_0__.URL);
-    const result = await request;
-    const text = JSON.parse(await result.text());
+    const getInfo = JSON.parse(e.data);
 
-    const userName =  Array.from(text).find(nameInArray => nameInArray.name === name)
 
-    if(!userName) {
-      await this.add({name: name})
+    const { user } = getInfo;
+
+    const { chat } = getInfo;
+
+    const { dbUsers } = getInfo;
+
+    const { dbChat } = getInfo;
+
+    const { busy } = getInfo;
+
+
+    if(user) {
+
       containerChat.classList.remove('hidden')
       formName.classList.add('hidden')
-      const request = await fetch(_app__WEBPACK_IMPORTED_MODULE_0__.URL);
-      const result = await request;
-      const text = JSON.parse(await result.text());
-      text.reverse().forEach(item => {
-        if(item.name === name) {
-          const newDiv = `<li class="name-and-avatar">
-                            <div class="avatar"></div>
-                            <span class="name-text name-text-red">${item.name}</span>
-                        </li>`
-          nameList.insertAdjacentHTML("beforeend", newDiv)
+
+      if(user.name === userName.textContent) {
+
+        const newDiv = `<li class="name-and-avatar">
+                          <div class="avatar"></div>
+                          <span class="name-text name-text-red">You</span>
+                      </li>`
+        nameList.insertAdjacentHTML("afterbegin", newDiv)
+        return;
+
+      }
+      const newDiv = `<li class="name-and-avatar">
+                                    <div class="avatar"></div>
+                                    <span class="name-text">${user.name}</span>
+                                </li>`
+      nameList.children[0].insertAdjacentHTML("afterend", newDiv)
+    }
+
+
+    if(chat) {
+        if(chat.name === userName.textContent) {
+
+          const newMessage = `
+                  <div class="message-container message-container-you ">
+                    <div class="name-and-text">
+                      <div class="name-and-data name-and-data-red"> You, ${new Date().toLocaleString()}</div>
+                      <span class="message-text">${chat.message}</span>
+                    </div>
+                  </div>
+    `
+          chatMessages.insertAdjacentHTML('afterbegin', newMessage)
           return;
         }
-        const newDiv = `<li class="name-and-avatar">
-                            <div class="avatar"></div>
-                            <span class="name-text">${item.name}</span>
-                        </li>`
-        nameList.insertAdjacentHTML("beforeend", newDiv)
-      })
+      const newMessage = `
+                    <div class="message-container">
+                      <div class="name-and-text">
+                        <div class="name-and-data"> ${chat.name}, ${new Date().toLocaleString()}</div>
+                        <span class="message-text">${chat.message}</span>
+                      </div>
+                    </div>
+      `
+      chatMessages.insertAdjacentHTML('afterbegin', newMessage)
+
+    }
+
+    if(dbUsers) {
+
+      nameList.innerHTML = '';
+
+      console.log(dbUsers)
+
+      dbUsers.reverse().forEach(item => {
+                if(item.name === userName.textContent) {
+
+                  const newDiv = `<li class="name-and-avatar">
+                                    <div class="avatar"></div>
+                                    <span class="name-text name-text-red">You</span>
+                                </li>`
+                  nameList.insertAdjacentHTML("afterbegin", newDiv)
+                  return;
+                }
+                const newDiv = `<li class="name-and-avatar">
+                                    <div class="avatar"></div>
+                                    <span class="name-text">${item.name}</span>
+                                </li>`
+                nameList.insertAdjacentHTML("beforeend", newDiv)
+              })
+
       return;
     }
 
-    alert('Никнейм занят! Необходимо выбрать другой!')
-  }
+    if(dbChat) {
 
+      dbChat.forEach(message => {
+        if(message.name === userName.textContent) {
+          const newMessage = `
+                    <div class="message-container message-container-you ">
+                      <div class="name-and-text">
+                        <div class="name-and-data name-and-data-red"> You, ${message.time}</div>
+                        <span class="message-text">${message.message}</span>
+                      </div>
+                    </div>
+      `
+          chatMessages.insertAdjacentHTML('beforeend', newMessage)
+          return;
+        }
 
-  async add (user) {
-    const query = '/users';
-
-    const requests = await fetch(this.apiUrl + query, {
-      method: 'POST',
-      headers: {
-        'Content-Type':'application/json'
-      },
-      body: JSON.stringify(user),
-    });
-
-    const result = await requests;
-
-    if (!result.ok) {
-      console.error('Ошибка')
-
-      return;
-    }
-
-    const json = await result.json();
-
-    const status = json.status;
-
-    console.log(status);
-  }
-
-  async delete () {
-    window.addEventListener("beforeunload", async (e) => {
-      const query = '/?user=' + this.nikName.name;
-
-      const requests = await fetch(this.apiUrl + query, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        const newMessage = `
+                    <div class="message-container">
+                      <div class="name-and-text">
+                        <div class="name-and-data"> ${message.name}, ${message.time}</div>
+                        <span class="message-text">${message.message}</span>
+                      </div>
+                    </div>
+      `
+        chatMessages.insertAdjacentHTML('beforeend', newMessage)
       });
 
-      const result = await requests;
+      return;
+    }
 
-      if (!result.ok) {
-        console.error('Ошибка')
+    if(busy) {
+      alert(busy)
+    }
 
-        return;
-      }
+    console.log('ws message')
+  }
 
-      const json = await result.json();
+  wsClose(){
 
-      const status = json.status;
+    console.log('ws close')
+  }
 
-      console.log(status);
+  wsError() {
 
-    })
+    console.log('ws error')
   }
 }
-
-
-
-
-
-
 
 
 /***/ }),
@@ -284,29 +283,22 @@ class UserApi {
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 __webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   URL: function() { return /* binding */ URL; }
-/* harmony export */ });
 /* harmony import */ var _BindToDom__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BindToDom */ "./src/js/BindToDom.js");
-/* harmony import */ var _UserApi__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./UserApi */ "./src/js/UserApi.js");
-/* harmony import */ var _SendChat__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SendChat */ "./src/js/SendChat.js");
+/* harmony import */ var _Websocket__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Websocket */ "./src/js/Websocket.js");
 
 
 
-
-const sendChat = new _SendChat__WEBPACK_IMPORTED_MODULE_2__["default"]()
+const websocket = new _Websocket__WEBPACK_IMPORTED_MODULE_1__["default"]()
 
 const container = document.querySelector('.container');
 const form = new _BindToDom__WEBPACK_IMPORTED_MODULE_0__["default"](container);
-// export const URL = 'http://localhost:8080'
-const URL = 'https://websockets-backend.onrender.com'
+
 
 
 document.addEventListener("DOMContentLoaded", (e) => {
   e.preventDefault()
   form.bindToDOM();
 })
-
 
 
 container.addEventListener('click', (e) => {
@@ -319,13 +311,10 @@ container.addEventListener('click', (e) => {
   if(!btn || nameInput.value.trim() === "") return;
   userName.textContent = nameInput.value;
 
-  urlConfig.get(nameInput.value);
+  websocket.userGet(nameInput.value);
 })
 
-sendChat.init()
-
-window.api = new _UserApi__WEBPACK_IMPORTED_MODULE_1__["default"](URL);
-const urlConfig = window.api;
+websocket.init()
 
 
 
