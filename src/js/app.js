@@ -5,8 +5,7 @@ const websocket = new Websocket()
 
 const container = document.querySelector('.container');
 const form = new BindToDom(container);
-export const URL = 'http://localhost:7070'
-// export const URL = 'https://websockets-backend.onrender.com'
+
 
 
 document.addEventListener("DOMContentLoaded", (e) => {

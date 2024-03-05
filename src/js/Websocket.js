@@ -1,5 +1,5 @@
-const ws = new WebSocket(`ws://localhost:7070/ws`);
-// const ws = new WebSocket(`wss:////websockets-backend.onrender.com`);
+// const ws = new WebSocket(`ws://localhost:7070/ws`);
+const ws = new WebSocket(`wss://websockets-backend.onrender.com/ws`);
 
 
 export default class Websocket {
